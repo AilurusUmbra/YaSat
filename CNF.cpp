@@ -23,15 +23,15 @@ class CNF{
     literal_freq = f.literal_freq;
   }
   void print_freq(){
-    cout<<"*******************\n";
-    for(auto i=0; i<literal_freq.size(); ++i){
-      cout<<i<<" ";
+    std::cout<<"*******************\n";
+    for(size_t i=0; i<literal_freq.size(); ++i){
+      std::cout<<i<<" ";
     }
-    cout<<endl;
-    for(auto i=0; i<literal_freq.size(); ++i){
-      cout<<literal_freq[i]<<" ";
+    std::cout<<std::endl;
+    for(size_t i=0; i<literal_freq.size(); ++i){
+      std::cout<<literal_freq[i]<<" ";
     }
-    cout<<endl;
+    std::cout<<std::endl;
   }
 };
 
