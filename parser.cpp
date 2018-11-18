@@ -116,8 +116,16 @@ void parse_DIMACS_CNF(vector<vector<int> > &clauses,
   parse_DIMACS(in, clauses);
   //gzclose(in);
   fclose(in);
-  
+
+/*  std::cout<<"print clauses: \n";
+  for(auto& clause : clauses){
+    for(auto& literal : clause){
+      std::cout<<literal<<' ';
+    }
+    std::cout<<"\n";
+  }
   std::cout<<"read file successfully\n";  
+*/
 
   maxVarIndex = 0;
   for (i = 0; i < clauses.size(); ++i)

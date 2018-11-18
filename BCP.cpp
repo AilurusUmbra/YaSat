@@ -4,16 +4,18 @@
 
 using namespace std;
 
-#ifndef STATE
 #define UNSAT 0
 #define SAT 1
-#endif
-
 string state[2] = {"s UNSATISFIABLE", "s SATISFIABLE"};
 
+class CNF{
+  public:
+  vector<vector<int> > clauses;
+  vector<int> literals;
+  vector<int> literal_freq;
 
-#include "CNF.cpp"
 
+};
 
 // print SAT
 void printSAT(CNF& f, int rst){
@@ -30,17 +32,7 @@ void printSAT(CNF& f, int rst){
   return; 
 }
 
-// BCP 
-void unitRule(CNF& f){
-  if(f.clauses.empty()){
-    printSAT(f, SAT);
-    return;
-  }
 
-
-} 
-    // unit clause find
-      // implication
 
 int main(int argc, char* argv[]){
 
@@ -63,14 +55,23 @@ int main(int argc, char* argv[]){
     std::cout<<"\n";                     
   }                                      
   std::cout<<"read file successfully\n"; 
-  cout<<f.clauses.size()<<endl;
+  cout<<f.clauses.size();
   
   f.literals.resize(maxVarIndex, -1);   // 1:true, 0:false, -1: not assigned 
   f.literal_freq.resize(maxVarIndex, 0);
   
-  // BCP
-  unitRule(f);
+  // BCP 
+  void unitRule(CNF& f){
+    if(f.clauses.empty()){
+      printSAT(f, SAT);
+      return;
+    }
 
+
+  } 
+    // unit clause find
+      // implication
+  
 
   // DPLL
 
