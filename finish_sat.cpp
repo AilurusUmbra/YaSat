@@ -1,9 +1,7 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <fstream>
-#include "parser.h"
-#include "CNF.cpp"
+#include<iostream>
+#include<vector>
+#include<algorithm>
+#include"parser.h"
 
 using namespace std;
 
@@ -15,11 +13,15 @@ using namespace std;
 string state[2] = {"s UNSATISFIABLE", "s SATISFIABLE"};
 
 
+#include "CNF.cpp"
+
+
+#include<fstream>
+
 // absolute value
 int abs(int x){
 	return (x>0) ? x : -x;
 }
-
 
 // print SAT
 string outFileName;
@@ -44,7 +46,7 @@ void printSAT(CNF& f, int rst){
         if(f.literals[lit]==0) // 0: false
           cout<<(-lit)<<' ';
 				else        
-          // 1: true, -1: dont care
+//else if(abs(f.literals[lit])==1) // 1: true, -1: dont care
           cout<<lit<<' ';
       }
       //ofile<<"0\n";
@@ -57,7 +59,6 @@ void printSAT(CNF& f, int rst){
   return; 
 }
 
-/* for debugging
 void print_clauses(CNF& f){
 
   int idx=0;
@@ -72,7 +73,7 @@ void print_clauses(CNF& f){
   cout<<"clauses size: "<<f.clauses.size()<<endl;
   cout<<"--------------------\n";
 }
-*/
+
 
 // BCP 
 void assignment(CNF& f, int l){
@@ -83,18 +84,19 @@ void assignment(CNF& f, int l){
   for(int cl=0; cl<f.clauses.size(); ++cl){
   idx=0; 
     for(int lit=0; lit<f.clauses[cl].size(); ++lit){
-    //cout<<"["<<cl<<"]["<<idx++<<"]"<<"lit: "<<lit<<endl;
+    cout<<"["<<cl<<"]["<<idx++<<"]"<<"lit: "<<lit<<endl;
       if(f.clauses[cl][lit]==l){
- //       cout<<"find pos lit in clauses!\n";
+        cout<<"find pos lit in clauses!\n";
         if(lit_value==1){
-   //       cout<<"POS: lit_value is 1, remove this clause\n";
+          cout<<"POS: lit_value is 1, remove this clause\n";
           // l is true, then remove this clause
           try {
             f.clauses.erase(f.clauses.begin()+cl);
             f.clauses.shrink_to_fit(); 
           } catch (int e){
-     //       cout << "An exception occurred. Exception Nr. " << e << '\n';
+            cout << "An exception occurred. Exception Nr. " << e << '\n';
           }
+          print_clauses(f);
           --cl;
           // SAT if CNF(clauses) is empty
           if(f.clauses.empty()){
@@ -104,9 +106,10 @@ void assignment(CNF& f, int l){
           break;
         }
         else if (lit_value==0){
-       //   cout<<"POS: lit_value is 0, remove this literal\n";
+          cout<<"POS: lit_value is 0, remove this literal\n";
           // l is false, remove this literal
           f.clauses[cl].erase(f.clauses[cl].begin()+lit);
+          print_clauses(f);
           
           // UNSAT if this clause(literals) is empty
           if(f.clauses[cl].empty()){
@@ -117,10 +120,13 @@ void assignment(CNF& f, int l){
         }
       }
       else if((-f.clauses[cl][lit])==l){
+        //cout<<f.clauses[cl][lit]<<endl;
+        cout<<"find neg lit in clauses!\n";
         if(lit_value==0){
           //l is true, then remove this clause
           f.clauses.erase(f.clauses.begin()+cl);
             f.clauses.shrink_to_fit(); 
+          print_clauses(f);
           --cl;
           // SAT if CNF(clauses) is empty
           if(f.clauses.empty()){
@@ -132,6 +138,7 @@ void assignment(CNF& f, int l){
         else if (lit_value==1){
           // l is false, remove this literal
           f.clauses[cl].erase(f.clauses[cl].begin()+lit);
+          print_clauses(f);
           // UNSAT if this clause(literals) is empty
           if(f.clauses[cl].empty()){
             printSAT(f, UNSAT);
@@ -163,6 +170,7 @@ void unitRule(CNF& f){
       // find unit clause
       if(cl.size()==1){
         find_unit=true;
+        cout<<"unit: "<<cl[0]<<endl;
 
         // set literal = 1 if unit clause is positive,
         //             = 0 if unit clause is negative.
@@ -176,11 +184,19 @@ void unitRule(CNF& f){
 
 
     }
+
+    cout<<"literals: ";
+    for(auto& lit : f.literals){
+      std::cout<<lit<<' ';           
+    }
+    cout<<endl;
+
   } while(find_unit);
 
   return;
 } 
-
+    // unit clause find
+      // implication
 
 void DPLL(CNF& f){
 
@@ -208,19 +224,28 @@ void DPLL(CNF& f){
 int main(int argc, char* argv[]){
 
   CNF f; 
+
+  // maybe for random start
+    
   int maxVarIndex=0;
+
   parse_DIMACS_CNF(f.clauses, maxVarIndex, argv[1]);
-  
   // move "*.cnf" to "*.sat" 
   outFileName = string(argv[1]);
   string satExtent = ".sat";
   outFileName.replace(outFileName.end()-4,outFileName.end(), satExtent);   
+  
 
+
+  //cout<<"maxVarIndex: "<<maxVarIndex<<endl;
+
+  print_clauses(f);
 
   f.literals.resize(maxVarIndex+1, -1);   // 1:true, 0:false, -1: not assigned 
-  f.literal_freq.resize(maxVarIndex+1, 0); // dont use [0] element	
+  f.literal_freq.resize(maxVarIndex+1, 0);
 	f.literal_freq[0] = -1; // dont use [0] element	
 	
+//	f.print_freq();
 	
 	// count freq
   for(auto& cl : f.clauses){
@@ -228,9 +253,8 @@ int main(int argc, char* argv[]){
     	++f.literal_freq[abs(l)];
 		}
   }
-  
-  //print_clauses(f);
-	//f.print_freq();
+
+	f.print_freq();
   
   // check for (a v a')
   for(auto& cl : f.clauses){
@@ -249,6 +273,7 @@ int main(int argc, char* argv[]){
 
   // DPLL
   DPLL(f);
+
 
   return 0;
 }
