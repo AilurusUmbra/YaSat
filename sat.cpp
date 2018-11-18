@@ -16,19 +16,36 @@ string state[2] = {"s UNSATISFIABLE", "s SATISFIABLE"};
 #include "CNF.cpp"
 
 
+#include<fstream>
+
 // print SAT
+string outFileName;
 void printSAT(CNF& f, int rst){
 
-  cout<<state[rst]<<endl;
-  
-  // if SAT, print variables;
-  if(rst){
-    cout<<"v ";
-    for(auto& lit : f.literals){
-      std::cout<<lit<<' ';           
+  ofstream ofile;
+  ofile.open(outFileName, ios::out);
+  if(ofile.fail()){
+    cout<<"fail to open output file...\n";
+    exit(3);
+  } else {
+    
+    //ofile<<state[rst]<<endl;
+    cout<<state[rst]<<endl;
+    
+    // if SAT, print variables;
+    if(rst){
+      //ofile<<"v ";
+      cout<<"v ";
+      for(auto& lit : f.literals){
+        //ofile<<lit<<' ';           
+        cout<<lit<<' ';           
+      }
+      //ofile<<"0\n";
+      cout<<"0\n";
     }
-    cout<<"0\n";
   }
+
+  ofile.close();
   return; 
 }
 
@@ -103,8 +120,13 @@ int main(int argc, char* argv[]){
   int maxVarIndex=0;
 
   parse_DIMACS_CNF(f.clauses, maxVarIndex, argv[1]);
-
+  // move "*.cnf" to "*.sat" 
+  outFileName = string(argv[1]);
+  string satExtent = ".sat";
+  outFileName.replace(outFileName.end()-4,outFileName.end(), satExtent);   
   
+
+
   cout<<"maxVarIndex: "<<maxVarIndex<<endl;
 
   std::cout<<"print clauses: \n";      
