@@ -16,7 +16,7 @@ string state[2] = {"s UNSATISFIABLE", "s SATISFIABLE"};
 
 
 // absolute value
-int myabs(int x){
+int abs(int x){
 	return (x>0) ? x : -x;
 }
 
@@ -37,7 +37,7 @@ void printSAT(CNF& f, int rst){
     // if SAT, print variables;
     if(rst){
       ofile<<"v ";
-      for(size_t lit=1; lit<f.literals.size(); ++lit){
+      for(int lit=1; lit<f.literals.size(); ++lit){
         if(f.literals[lit]==0) // 0: false
           ofile<<(-lit)<<' ';
 				else        
@@ -59,8 +59,8 @@ void assignment(CNF& f, int l){
 
   int lit_value = f.literals[l];
 
-  for(size_t cl=0; cl<f.clauses.size(); ++cl){
-    for(size_t lit=0; lit<f.clauses[cl].size(); ++lit){
+  for(int cl=0; cl<f.clauses.size(); ++cl){
+    for(int lit=0; lit<f.clauses[cl].size(); ++lit){
       if(f.clauses[cl][lit]==l){
         if(lit_value==1){
           // l is true, then remove this clause
@@ -190,7 +190,7 @@ int main(int argc, char* argv[]){
 	// count freq
   for(auto& cl : f.clauses){
     for(auto& l : cl){
-    	++f.literal_freq[myabs(l)];
+    	++f.literal_freq[abs(l)];
 		}
   }
   

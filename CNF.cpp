@@ -24,11 +24,11 @@ class CNF{
   }
   void print_freq(){
     std::cout<<"*******************\n";
-    for(size_t i=0; i<literal_freq.size(); ++i){
+    for(unsigned i=0; i<literal_freq.size(); ++i){
       std::cout<<i<<" ";
     }
     std::cout<<std::endl;
-    for(size_t i=0; i<literal_freq.size(); ++i){
+    for(unsigned i=0; i<literal_freq.size(); ++i){
       std::cout<<literal_freq[i]<<" ";
     }
     std::cout<<std::endl;
